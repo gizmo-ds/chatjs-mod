@@ -19,7 +19,7 @@ public enum OpenAIProvider {
     // https://platform.moonshot.cn/docs/pricing/chat
     Kimi("moonshot-v1-8k", "https://api.moonshot.cn/v1"),
     // https://help.aliyun.com/zh/model-studio/developer-reference/compatibility-of-openai-with-dashscope#7f9c78ae99pwz
-    Qwen("qwen-max", "https://dashscope.aliyuncs.com/compatible-mode/v1"),
+    Qwen("qwen-turbo", "https://dashscope.aliyuncs.com/compatible-mode/v1"),
     Custom(null, null) {
         @Override
         public OpenAIProvider withCustomValues(@NotNull String model, @NonNull String baseURL) {

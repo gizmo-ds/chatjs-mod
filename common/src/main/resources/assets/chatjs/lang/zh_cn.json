@@ -16,7 +16,7 @@
   "config.chatjs.general.provider.@DouBao": "豆包",
   "config.chatjs.general.provider.@Gemini": "Gemini",
   "config.chatjs.general.provider.@Kimi": "Kimi",
-  "config.chatjs.general.provider.@Qwen": "千问",
+  "config.chatjs.general.provider.@Qwen": "通义千问",
   "config.chatjs.general.provider.@Custom": "自定义",
   "config.chatjs.general.custom_provider": "自定义提供者",
   "config.chatjs.general.custom_provider.base_url": "基础地址",
