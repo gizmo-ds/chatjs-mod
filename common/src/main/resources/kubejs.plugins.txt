@@ -1,0 +1,1 @@
+dev.aika.chatjs.kubejs.ChatJSKubeJSPlugin

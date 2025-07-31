@@ -1,0 +1,10 @@
+# OpenAI/Grok/DeepSeek/DouBao/Gemini/Kimi/Qwen/Custom
+provider = "OpenAI"
+
+[custom_provider]
+model = "deepseek-v3"
+base_url = "https://dashscope.aliyuncs.com/compatible-mode/v1"
+# Optional
+models_path = "/models"
+# Optional
+chat_completion_path = "/chat/completions"
