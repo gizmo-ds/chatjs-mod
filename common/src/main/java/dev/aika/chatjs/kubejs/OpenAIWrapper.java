@@ -2,6 +2,7 @@ package dev.aika.chatjs.kubejs;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
 import com.google.gson.annotations.SerializedName;
 import dev.aika.chatjs.api.OpenAIClient;
 import dev.aika.chatjs.api.OpenAIProvider;
@@ -41,7 +42,11 @@ public class OpenAIWrapper {
     public static class chat {
         private chat() {}
 
-        public static Object createCompletion(NativeObject body) {
+        public static JsonElement createCompletion(NativeObject body) {
+            return client.chat.createCompletion(body);
+        }
+
+        public static JsonElement createCompletion(String body) {
             return client.chat.createCompletion(body);
         }
     }

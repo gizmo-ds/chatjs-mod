@@ -2,6 +2,7 @@ package dev.aika.chatjs.api;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.aika.chatjs.api.resources.ErrorResponse;
 import dev.aika.chatjs.api.resources.ModelObject;
@@ -87,13 +88,22 @@ public class OpenAIClient {
     public class ChatAPI {
         private ChatAPI() {}
 
-        @SneakyThrows public Object createCompletion(Object body) {
+        @SneakyThrows public JsonElement createCompletion(Object body) {
             JsonObject obj = (JsonObject) gson.toJsonTree(body);
-            if (obj.has("model")) obj.remove("model");
-            obj.addProperty("model", model);
-            if (obj.has("stream")) obj.remove("stream");
-            obj.addProperty("stream", false);
-            String json = gson.toJson(obj);
+            return createCompletion(obj);
+        }
+
+        @SneakyThrows public JsonElement createCompletion(String body) {
+            JsonObject obj = (JsonObject) JsonIO.parseRaw(body);
+            return createCompletion(obj);
+        }
+
+        @SneakyThrows public JsonElement createCompletion(JsonObject body) {
+            if (body.has("model")) body.remove("model");
+            body.addProperty("model", model);
+            if (body.has("stream")) body.remove("stream");
+            body.addProperty("stream", false);
+            String json = gson.toJson(body);
             URI uri = new URI(provider.getBaseURL() + provider.getChatCompletionPath());
             HttpResponse<String> response = httpClient.send(
                     getRequest()
@@ -104,7 +114,7 @@ public class OpenAIClient {
                     HttpResponse.BodyHandlers.ofString());
             String _body = response.body();
             checkError(response, _body);
-            return UtilsJS.wrap(JsonIO.parseRaw(_body), JSObjectType.MAP);
+            return JsonIO.parseRaw(_body);
         }
 
         @SneakyThrows
