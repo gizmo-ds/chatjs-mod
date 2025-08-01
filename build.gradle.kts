@@ -1,7 +1,5 @@
 @file:Suppress("UnstableApiUsage", "SpellCheckingInspection")
 
-import net.fabricmc.loom.api.LoomGradleExtensionAPI
-
 plugins {
     `kotlin-dsl`
     alias(libs.plugins.architectury)
@@ -30,7 +28,7 @@ subprojects {
     apply(plugin = "architectury-plugin")
     apply(plugin = "dev.architectury.loom")
 
-    val loom = project.extensions.getByName<LoomGradleExtensionAPI>("loom")
+    val loom = project.extensions.getByName<net.fabricmc.loom.api.LoomGradleExtensionAPI>("loom")
     loom.silentMojangMappingsLicense()
 
     base.archivesName.set("${mod.id}-${project.name}")
@@ -123,6 +121,12 @@ subprojects {
             group = "publishing"
             debugMode = debugPublishing
             apiToken = curseforgeToken
+        }
+        tasks.register("releaseMod") {
+            group = "publishing"
+
+            dependsOn("curseforge")
+            dependsOn("modrinth")
         }
     }
 }
