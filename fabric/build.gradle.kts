@@ -74,9 +74,9 @@ tasks {
             mainFile.releaseType = mod.release_type
             mainFile.gameVersions.addAll(mod.game_version_supports)
             mainFile.addModLoader(project.name)
-            mainFile.addRequirement("kubejs")
-            mainFile.addOptional("cloth-config")
             mainFile.changelog = ext.get("changelog")
             mainFile.addEnvironment("Server", "Client")
+            mainFile.addRequirement("kubejs")
+            mainFile.addOptional("cloth-config")
         }
 }

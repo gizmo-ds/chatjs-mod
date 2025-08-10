@@ -16,13 +16,13 @@ architectury {
 
 allprojects {
     group = mod.group
-    version = mod.version
+    version = "${mod.minecraft_version}-${mod.version}"
 }
 
 val curseforgeToken: String = env.fetch("CF_TOKEN", "").trim()
 val modrinthToken: String = env.fetch("MODRINTH_TOKEN", "").trim()
 val modChangelog = rootProject.file("CHANGELOG.md").readText().split("###")[1].let { x -> "###$x".trim() }
-val debugPublishing = true
+val parchmentVersion: String = libs.versions.parchment.get()
 
 subprojects {
     apply(plugin = "architectury-plugin")
@@ -34,20 +34,10 @@ subprojects {
     base.archivesName.set("${mod.id}-${project.name}")
 
     repositories {
-        maven("https://maven.parchmentmc.org") {
-            name = "ParchmentMC"
-        }
-        maven("https://cursemaven.com") {
-            name = "CurseMaven"
-            content { includeGroup("curse.maven") }
-        }
-        maven("https://api.modrinth.com/maven") {
-            name = "Modrinth"
-            content { includeGroup("maven.modrinth") }
-        }
-        maven("https://jitpack.io") {
-            name = "JitPack"
-        }
+        maven("https://maven.parchmentmc.org") { name = "ParchmentMC" }
+        maven("https://cursemaven.com") { content { includeGroup("curse.maven") } }
+        maven("https://api.modrinth.com/maven") { content { includeGroup("maven.modrinth") } }
+        maven("https://jitpack.io") { name = "JitPack" }
         maven("https://maven.latvian.dev/releases") {
             // KubeJS and Rhino
             name = "latvian.dev Maven"
@@ -62,7 +52,7 @@ subprojects {
         "minecraft"("net.minecraft:minecraft:${mod.minecraft_version}")
         "mappings"(loom.layered {
             officialMojangMappings()
-            parchment("org.parchmentmc.data:parchment-${mod.minecraft_version}:${mod.prop("parchment_version")}@zip")
+            parchment("org.parchmentmc.data:parchment-${mod.minecraft_version}:$parchmentVersion@zip")
         })
 
         compileOnly(rootProject.libs.lombok)
@@ -98,12 +88,12 @@ subprojects {
 
         if (mod.modrinth_id.isNotEmpty() && modrinthToken.isNotEmpty())
             extensions.configure<com.modrinth.minotaur.ModrinthExtension>("modrinth") {
-                debugMode.set(debugPublishing)
+                debugMode.set(mod.debug_publishing)
                 token.set(modrinthToken)
                 projectId.set(mod.modrinth_id)
                 syncBodyFrom.set(rootProject.file("README.md").readText())
                 versionName.set("${mod.version} ${loom.platform.get().displayName()}")
-                versionNumber.set(project.version.toString())
+                versionNumber.set("${project.name}-${project.version}")
                 versionType.set(mod.release_type)
                 gameVersions.addAll(mod.game_version_supports)
                 loaders.add(project.name)
@@ -119,7 +109,7 @@ subprojects {
                 return@register
             }
             group = "publishing"
-            debugMode = debugPublishing
+            debugMode = mod.debug_publishing
             apiToken = curseforgeToken
         }
         tasks.register("releaseMod") {
