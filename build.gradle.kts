@@ -1,7 +1,7 @@
 @file:Suppress("UnstableApiUsage", "SpellCheckingInspection")
 
 plugins {
-    `kotlin-dsl`
+    java
     alias(libs.plugins.architectury)
     alias(libs.plugins.loom) apply false
     alias(libs.plugins.shadow) apply false

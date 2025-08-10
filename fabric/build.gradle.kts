@@ -16,10 +16,7 @@ configurations {
 }
 
 repositories {
-    maven("https://maven.terraformersmc.com/") {
-        // ModMenu
-        name = "Terraformers"
-    }
+    maven("https://maven.terraformersmc.com/") { name = "Terraformers" } // ModMenu
 }
 
 dependencies {
@@ -36,6 +33,7 @@ dependencies {
     modApi(libs.architectury.fabric)
     modImplementation(libs.kubejs.fabric)
     modApi(libs.clothconfig.fabric)
+//    modCompileOnly(libs.clothconfig.fabric)
 
     shadowBundle(project(path = ":common", configuration = "transformProductionFabric"))
 }
@@ -57,6 +55,8 @@ tasks {
         archiveClassifier.set("dev-shadow")
 
         mergeServiceFiles()
+
+        relocate("com.electronwill.nightconfig", "${mod.group}.libs.nightconfig")
     }
 
     remapJar {
@@ -65,9 +65,7 @@ tasks {
     }
 
     if (mod.modrinth_id.isNotEmpty() && (ext.get("modrinth_token") as String).isNotEmpty())
-        modrinth {
-            uploadFile.set(remapJar.flatMap { it.archiveFile })
-        }
+        modrinth { uploadFile.set(remapJar.flatMap { it.archiveFile }) }
     if (mod.curseforge_id.isNotEmpty() && (ext.get("curseforge_token") as String).isNotEmpty())
         curseforge {
             val mainFile = upload(mod.curseforge_id, remapJar.flatMap { it.archiveFile })

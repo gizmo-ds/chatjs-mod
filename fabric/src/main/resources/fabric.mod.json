@@ -23,7 +23,7 @@
       "dev.aika.chatjs.fabric.client.ChatJSFabricClient"
     ],
     "modmenu": [
-      "dev.aika.chatjs.fabric.client.compat.ModMenuCompat"
+      "dev.aika.chatjs.fabric.client.compat.ClothConfigCompat"
     ]
   },
   "mixins": [

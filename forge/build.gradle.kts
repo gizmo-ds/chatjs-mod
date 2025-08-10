@@ -34,6 +34,7 @@ dependencies {
     modApi(libs.architectury.forge)
     modImplementation(libs.kubejs.forge)
     modApi(libs.clothconfig.forge)
+//    modCompileOnly(libs.clothconfig.forge)
 
     shadowBundle(project(path = ":common", configuration = "transformProductionForge"))
 }
@@ -63,9 +64,7 @@ tasks {
     }
 
     if (mod.modrinth_id.isNotEmpty() && (ext.get("modrinth_token") as String).isNotEmpty())
-        modrinth {
-            uploadFile.set(remapJar.flatMap { it.archiveFile })
-        }
+        modrinth { uploadFile.set(remapJar.flatMap { it.archiveFile }) }
     if (mod.curseforge_id.isNotEmpty() && (ext.get("curseforge_token") as String).isNotEmpty())
         curseforge {
             val mainFile = upload(mod.curseforge_id, remapJar.flatMap { it.archiveFile })

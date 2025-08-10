@@ -16,14 +16,14 @@ import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 
-public class ChatJSClothConfig {
+public class ClothConfigCompat {
     private static final String SponsorUrl = "https://afdian.com/a/gizmo";
 
     public static Screen ConfigScreen(Screen parent) {
         final ConfigBuilder builder = ConfigBuilder.create()
                 .setParentScreen(parent)
                 .setTitle(Component.translatable("config.chatjs.title"))
-                .setSavingRunnable(ChatJSClothConfig::save);
+                .setSavingRunnable(ClothConfigCompat::save);
         ConfigEntryBuilder entryBuilder = builder.entryBuilder();
 
         final ConfigCategory general = builder.getOrCreateCategory(Component.translatable("config.chatjs.general"));
