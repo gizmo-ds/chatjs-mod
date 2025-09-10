@@ -4,8 +4,7 @@ plugins {
     alias(libs.plugins.shadow)
 }
 
-apply(plugin = "com.modrinth.minotaur")
-apply(plugin = "net.darkhax.curseforgegradle")
+apply(plugin = "com.hypherionmc.modutils.modpublisher")
 
 architectury { fabric() }
 
@@ -16,7 +15,11 @@ configurations {
 }
 
 repositories {
-    maven("https://maven.terraformersmc.com/") { name = "Terraformers" } // ModMenu
+    // ModMenu
+    maven("https://maven.terraformersmc.com/releases/") {
+        name = "Terraformers"
+        content { includeGroup("com.terraformersmc") }
+    }
 }
 
 dependencies {
@@ -34,27 +37,19 @@ dependencies {
     modImplementation(libs.kubejs.fabric)
     modApi(libs.clothconfig.fabric)
 //    modCompileOnly(libs.clothconfig.fabric)
-
-    shadowBundle(project(path = ":common", configuration = "transformProductionFabric"))
 }
 
 tasks {
     processResources {
         inputs.property("version", project.version)
+        filteringCharset = "UTF-8"
 
-        filesMatching("fabric.mod.json") {
-            expand("version" to project.version)
-        }
-        from(rootProject.file("assets/logo.png")) {
-            rename { "assets/${mod.id}/icon.png" }
-        }
+        filesMatching("fabric.mod.json") { expand("version" to project.version) }
     }
 
     shadowJar {
         configurations = listOf(shadowBundle)
         archiveClassifier.set("dev-shadow")
-
-        mergeServiceFiles()
 
         relocate("com.electronwill.nightconfig", "${mod.group}.libs.nightconfig")
     }
@@ -64,17 +59,7 @@ tasks {
         dependsOn(shadowJar)
     }
 
-    if (mod.modrinth_id.isNotEmpty() && (ext.get("modrinth_token") as String).isNotEmpty())
-        modrinth { uploadFile.set(remapJar.flatMap { it.archiveFile }) }
-    if (mod.curseforge_id.isNotEmpty() && (ext.get("curseforge_token") as String).isNotEmpty())
-        curseforge {
-            val mainFile = upload(mod.curseforge_id, remapJar.flatMap { it.archiveFile })
-            mainFile.releaseType = mod.release_type
-            mainFile.gameVersions.addAll(mod.game_version_supports)
-            mainFile.addModLoader(project.name)
-            mainFile.changelog = ext.get("changelog")
-            mainFile.addEnvironment("Server", "Client")
-            mainFile.addRequirement("kubejs")
-            mainFile.addOptional("cloth-config")
-        }
+    publisher {
+        artifact.set(remapJar)
+    }
 }

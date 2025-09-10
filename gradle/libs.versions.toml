@@ -1,10 +1,9 @@
 [plugins]
 dotenv = { id = "co.uzzu.dotenv.gradle", version = "4.0.0" }
-modrinth = { id = "com.modrinth.minotaur", version = "2.+" }
-curseforge = { id = "net.darkhax.curseforgegradle", version = "1.1.26" }
 architectury = { id = "architectury-plugin", version = "3.4-SNAPSHOT" }
 loom = { id = "dev.architectury.loom", version = "1.10-SNAPSHOT" }
 shadow = { id = "com.github.johnrengelman.shadow", version = "8.1.1" }
+modpublisher = { id = "com.hypherionmc.modutils.modpublisher", version = "2.1.6" }
 
 [versions]
 lombok = "1.18.38"
@@ -44,5 +43,5 @@ clothconfig-forge = { module = "me.shedaniel.cloth:cloth-config-forge", version.
 modmenu = { module = "com.terraformersmc:modmenu", version.ref = "modmenu" }
 mixinextras-fabric = { module = "io.github.llamalad7:mixinextras-fabric", version.ref = "mixinextras" }
 mixinextras-forge = { module = "io.github.llamalad7:mixinextras-forge", version.ref = "mixinextras" }
-norealmsbutton-fabric = { module = "maven.modrinth:no-realms-button", version = "w3xHbrfC" }
-norealmsbutton-forge = { module = "maven.modrinth:no-realms-button", version = "Piw7UHNK" }
+norealmsbutton-fabric = { version = "w3xHbrfC", module = "maven.modrinth:no-realms-button" } # 2.0.1
+norealmsbutton-forge = { version = "Piw7UHNK", module = "maven.modrinth:no-realms-button" } # 2.0.1

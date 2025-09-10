@@ -4,8 +4,7 @@ plugins {
     alias(libs.plugins.shadow)
 }
 
-apply(plugin = "com.modrinth.minotaur")
-apply(plugin = "net.darkhax.curseforgegradle")
+apply(plugin = "com.hypherionmc.modutils.modpublisher")
 
 loom {
     forge {
@@ -35,27 +34,19 @@ dependencies {
     modImplementation(libs.kubejs.forge)
     modApi(libs.clothconfig.forge)
 //    modCompileOnly(libs.clothconfig.forge)
-
-    shadowBundle(project(path = ":common", configuration = "transformProductionForge"))
 }
 
 tasks {
     processResources {
         inputs.property("version", project.version)
+        filteringCharset = "UTF-8"
 
-        filesMatching("META-INF/mods.toml") {
-            expand("version" to project.version)
-        }
-        from(rootProject.file("assets/logo.png")) {
-            rename { "${mod.id}-logo.png" }
-        }
+        filesMatching("META-INF/mods.toml") { expand("version" to project.version) }
     }
 
     shadowJar {
         configurations = listOf(shadowBundle)
         archiveClassifier.set("dev-shadow")
-
-        mergeServiceFiles()
     }
 
     remapJar {
@@ -63,17 +54,7 @@ tasks {
         dependsOn(shadowJar)
     }
 
-    if (mod.modrinth_id.isNotEmpty() && (ext.get("modrinth_token") as String).isNotEmpty())
-        modrinth { uploadFile.set(remapJar.flatMap { it.archiveFile }) }
-    if (mod.curseforge_id.isNotEmpty() && (ext.get("curseforge_token") as String).isNotEmpty())
-        curseforge {
-            val mainFile = upload(mod.curseforge_id, remapJar.flatMap { it.archiveFile })
-            mainFile.releaseType = mod.release_type
-            mainFile.gameVersions.addAll(mod.game_version_supports)
-            mainFile.addModLoader(project.name)
-            mainFile.changelog = ext.get("changelog")
-            mainFile.addEnvironment("Server", "Client")
-            mainFile.addRequirement("kubejs")
-            mainFile.addOptional("cloth-config")
-        }
+    publisher {
+        artifact.set(remapJar)
+    }
 }

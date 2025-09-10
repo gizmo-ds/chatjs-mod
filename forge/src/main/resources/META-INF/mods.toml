@@ -11,7 +11,7 @@ authors = "Gizmo"
 description = '''
 ChatJS
 '''
-logoFile = "chatjs-logo.png"
+logoFile = "chatjs_logo.png"
 displayURL = "https://github.com/gizmo-ds/chatjs-mod"
 
 [[dependencies.chatjs]]

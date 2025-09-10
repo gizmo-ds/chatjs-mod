@@ -1,35 +1,46 @@
 @file:Suppress("UnstableApiUsage", "SpellCheckingInspection")
 
+import com.hypherionmc.modpublisher.plugin.ModPublisherGradleExtension
+import net.fabricmc.loom.api.LoomGradleExtensionAPI
+import org.gradle.kotlin.dsl.libs
+
 plugins {
     java
     alias(libs.plugins.architectury)
     alias(libs.plugins.loom) apply false
     alias(libs.plugins.shadow) apply false
-    alias(libs.plugins.modrinth) apply false
-    alias(libs.plugins.curseforge) apply false
+    alias(libs.plugins.modpublisher) apply false
     alias(libs.plugins.dotenv)
 }
 
-architectury {
-    minecraft = mod.minecraft_version
-}
-
-allprojects {
-    group = mod.group
-    version = "${mod.minecraft_version}-${mod.version}"
-}
-
+val mcVersion = mod.minecraft_version
 val curseforgeToken: String = env.fetch("CF_TOKEN", "").trim()
 val modrinthToken: String = env.fetch("MODRINTH_TOKEN", "").trim()
 val modChangelog = rootProject.file("CHANGELOG.md").readText().split("###")[1].let { x -> "###$x".trim() }
-val parchmentVersion: String = libs.versions.parchment.get()
+
+architectury { minecraft = mcVersion }
+
+allprojects {
+    group = mod.group
+    version = "${mod.version}-$mcVersion"
+}
 
 subprojects {
     apply(plugin = "architectury-plugin")
     apply(plugin = "dev.architectury.loom")
 
-    val loom = project.extensions.getByName<net.fabricmc.loom.api.LoomGradleExtensionAPI>("loom")
-    loom.silentMojangMappingsLicense()
+    base.archivesName.set("${mod.id}-${project.name}")
+
+    val libs = rootProject.libs
+    var mappingsDependency: Dependency? = null
+    configure<LoomGradleExtensionAPI> {
+        silentMojangMappingsLicense()
+
+        mappingsDependency = layered {
+            officialMojangMappings()
+            parchment("org.parchmentmc.data:parchment-$mcVersion:${libs.versions.parchment.get()}@zip")
+        }
+    }
 
     base.archivesName.set("${mod.id}-${project.name}")
 
@@ -49,14 +60,11 @@ subprojects {
     }
 
     dependencies {
-        "minecraft"("net.minecraft:minecraft:${mod.minecraft_version}")
-        "mappings"(loom.layered {
-            officialMojangMappings()
-            parchment("org.parchmentmc.data:parchment-${mod.minecraft_version}:$parchmentVersion@zip")
-        })
+        "minecraft"("net.minecraft:minecraft:$mcVersion")
+        mappingsDependency?.let { "mappings"(it) }
 
-        compileOnly(rootProject.libs.lombok)
-        annotationProcessor(rootProject.libs.lombok)
+        compileOnly(libs.lombok)
+        annotationProcessor(libs.lombok)
     }
 
     java {
@@ -66,64 +74,22 @@ subprojects {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-    tasks {
-        withType<JavaCompile> {
-            options.encoding = "UTF-8"
-            options.release.set(17)
-        }
-
-        processResources {
-            from(rootProject.file("LICENSE"))
-            from(rootProject.file("third-party-licenses")) { into("third-party-licenses") }
-        }
+    tasks.withType<JavaCompile> {
+        options.encoding = "UTF-8"
+        options.release.set(17)
     }
-
-    if (mod.enabled_platforms.contains(project.name)) {
-        apply(plugin = "com.modrinth.minotaur")
-        apply(plugin = "net.darkhax.curseforgegradle")
-
-        ext.set("changelog", modChangelog)
-        ext.set("curseforge_token", curseforgeToken)
-        ext.set("modrinth_token", modrinthToken)
-
-        if (mod.modrinth_id.isNotEmpty() && modrinthToken.isNotEmpty())
-            extensions.configure<com.modrinth.minotaur.ModrinthExtension>("modrinth") {
-                debugMode.set(mod.debug_publishing)
-                token.set(modrinthToken)
-                projectId.set(mod.modrinth_id)
-                syncBodyFrom.set(rootProject.file("README.md").readText())
-                versionName.set("${mod.version} ${loom.platform.get().displayName()}")
-                versionNumber.set("${project.name}-${project.version}")
-                versionType.set(mod.release_type)
-                gameVersions.addAll(mod.game_version_supports)
-                loaders.add(project.name)
-                changelog.set(modChangelog)
-                dependencies {
-                    required.project("kubejs")
-                    optional.project("cloth-config")
-                }
-            }
-        tasks.register<net.darkhax.curseforgegradle.TaskPublishCurseForge>("curseforge") {
-            if (mod.curseforge_id.isEmpty() || curseforgeToken.isEmpty()) {
-                isEnabled = false
-                return@register
-            }
-            group = "publishing"
-            debugMode = mod.debug_publishing
-            apiToken = curseforgeToken
-        }
-        tasks.register("releaseMod") {
-            group = "publishing"
-
-            dependsOn("curseforge")
-            dependsOn("modrinth")
-        }
+    tasks.named("clean") {
+        doLast { delete("logs") }
     }
 }
 
-configure(mod.enabled_platforms.map { project(":$it") }) {
+configure(pub.enabled_platforms.map { project(":$it") }) {
     apply(plugin = "architectury-plugin")
     apply(plugin = "dev.architectury.loom")
+    apply(plugin = "com.hypherionmc.modutils.modpublisher")
+
+    val platformName = project.extensions.getByName<LoomGradleExtensionAPI>("loom")
+        .platform.map { it.displayName() }.get()
 
     configure<dev.architectury.plugin.ArchitectPluginExtension> {
         platformSetupLoomIde()
@@ -141,5 +107,45 @@ configure(mod.enabled_platforms.map { project(":$it") }) {
 
     dependencies {
         common(project(path = ":common", configuration = "namedElements")) { isTransitive = false }
+        shadowBundle(project(path = ":common", configuration = "transformProduction$platformName"))
+    }
+
+    tasks {
+        processResources {
+            duplicatesStrategy = DuplicatesStrategy.INCLUDE
+
+            from(rootProject.file("LICENSE")) { rename { "LICENSE.txt" } }
+            from(rootProject.file("third-party-licenses")) { into("third-party-licenses") }
+            from(project.file("third-party-licenses")) { into("third-party-licenses") }
+            from(rootProject.file("assets/logo.png")) { rename { "${mod.id}_logo.png" } }
+            from(rootProject.file("assets/private-logo.png")) { rename { "${mod.id}_logo.png" } }
+        }
+    }
+
+    configure<ModPublisherGradleExtension> {
+        apiKeys {
+            modrinth(modrinthToken)
+            curseforge(curseforgeToken)
+        }
+        modrinthID.set(pub.modrinth_id)
+        curseID.set(pub.curseforge_id)
+
+        debug.set(pub.debug)
+
+        versionType.set(mod.release_type)
+        changelog.set(modChangelog)
+        displayName.set("${mod.name} ${mod.version} for $platformName $mcVersion")
+        projectVersion.set("${project.version}-${project.name}")
+        loaders.add(project.name)
+        gameVersions.addAll(mod.game_version_supports)
+
+        modrinthDepends {
+            optional("cloth-config")
+            if (project.name == "fabric") required("fabric-api")
+        }
+        curseDepends {
+            optional("cloth-config")
+            if (project.name == "fabric") required("fabric-api")
+        }
     }
 }
