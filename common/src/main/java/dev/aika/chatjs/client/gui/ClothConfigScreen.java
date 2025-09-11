@@ -4,6 +4,7 @@ import dev.aika.chatjs.ChatJS;
 import dev.aika.chatjs.ChatJSUtil;
 import dev.aika.chatjs.api.OpenAIProvider;
 import dev.aika.chatjs.kubejs.OpenAIWrapper;
+import dev.aika.chatjs.server.ChatJSEventHandler;
 import me.shedaniel.clothconfig2.api.ConfigBuilder;
 import me.shedaniel.clothconfig2.api.ConfigCategory;
 import me.shedaniel.clothconfig2.api.ConfigEntryBuilder;
@@ -50,6 +51,23 @@ public class ClothConfigScreen {
         customProvider.add(createStrFieldEntry(entryBuilder, "custom_provider.models_path"));
         customProvider.add(createStrFieldEntry(entryBuilder, "custom_provider.chat_completion_path"));
         general.addEntry(customProvider.build());
+
+        final ConfigCategory httpClient = builder.getOrCreateCategory(Component.translatable("config.chatjs.http_client"));
+        httpClient.addEntry(entryBuilder.startDoubleField(
+                        Component.translatable("config.chatjs.http_client.rps"),
+                        Double.parseDouble(ChatJS.CONFIG.get("http_client.rps").toString())
+                )
+                .setDefaultValue(() -> Double.parseDouble(ChatJS.CONFIG.getDefault("http_client.rps").toString()))
+                .setSaveConsumer(saveValue("http_client.rps"))
+                .build());
+        httpClient.addEntry(entryBuilder.startDoubleField(
+                        Component.translatable("config.chatjs.http_client.request_timeout"),
+                        Double.parseDouble(ChatJS.CONFIG.get("http_client.request_timeout").toString())
+                )
+                .setDefaultValue(() -> Double.parseDouble(ChatJS.CONFIG.getDefault("http_client.request_timeout").toString()))
+                .setSaveConsumer(saveValue("http_client.request_timeout"))
+                .build());
+
         return builder.build();
     }
 
@@ -73,6 +91,6 @@ public class ClothConfigScreen {
 
     private static void save() {
         ChatJS.CONFIG.save();
-        OpenAIWrapper.setProvider(ChatJSUtil.getProvider());
+        ChatJSEventHandler.clientInit();
     }
 }

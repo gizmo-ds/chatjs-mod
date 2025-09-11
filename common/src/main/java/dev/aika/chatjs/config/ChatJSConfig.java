@@ -31,7 +31,8 @@ public class ChatJSConfig {
         }
     }
 
-    @SneakyThrows public ChatJSConfig load() {
+    @SneakyThrows
+    public ChatJSConfig load() {
         if (!configFile.exists()) save(defaultConfig);
 
         config = parser.parse(new FileReader(configFile));
@@ -39,7 +40,8 @@ public class ChatJSConfig {
         return this;
     }
 
-    @SneakyThrows public void save() {
+    @SneakyThrows
+    public void save() {
         if (config == null) {
             throw new IllegalStateException("Config is null");
         }
@@ -47,7 +49,8 @@ public class ChatJSConfig {
         log.info(marker, "Saved config");
     }
 
-    @SneakyThrows private void save(CommentedConfig conf) {
+    @SneakyThrows
+    private void save(CommentedConfig conf) {
         StringWriter sw = new StringWriter();
         writer.write(conf, sw);
         Files.write(configFile.toPath(), sw.toString().getBytes());

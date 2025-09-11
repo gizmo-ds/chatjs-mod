@@ -2,11 +2,11 @@ package dev.aika.chatjs;
 
 import dev.aika.chatjs.api.OpenAIProvider;
 import dev.aika.chatjs.server.SecretManager;
-import net.minecraft.commands.CommandRuntimeException;
-import net.minecraft.network.chat.Component;
+import lombok.experimental.UtilityClass;
 
+@UtilityClass
 public class ChatJSUtil {
-    public static OpenAIProvider getProvider() {
+    public OpenAIProvider getProvider() {
         OpenAIProvider provider = OpenAIProvider.valueOf(ChatJS.CONFIG.get("provider"));
         if (provider == OpenAIProvider.Custom) {
             provider = OpenAIProvider.Custom.withCustomValues(
@@ -19,10 +19,11 @@ public class ChatJSUtil {
         return provider;
     }
 
-    public static String getApiKey() {
+    public String getApiKey() {
         String apikey = SecretManager.INSTANCE.getProperty("apikey");
         if (apikey == null || apikey.isEmpty()) {
-            throw new CommandRuntimeException(Component.literal("apikey not set"));
+            ChatJS.LOGGER.warn("apikey not set");
+            return null;
         }
         return apikey;
     }

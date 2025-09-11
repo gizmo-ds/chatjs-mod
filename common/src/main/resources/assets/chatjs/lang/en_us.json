@@ -5,8 +5,6 @@
   "gui.chatjs.missing_cloth_config.message": "You need to install the Cloth Config API mod to use the in-game configuration feature.\nClick the button below to jump to the download page",
   "gui.chatjs.missing_cloth_config.modrinth_download": "Modrinth",
   "gui.chatjs.missing_cloth_config.curseforge_download": "CurseForge",
-  "config.chatjs.sponsor.description": "❤ Enjoy %1$s ? Support the author on %2$s ! ❤",
-  "config.chatjs.sponsor.description.afdian": "AFDIAN",
   "config.chatjs.title": "ChatJS Settings",
   "config.chatjs.general": "general",
   "config.chatjs.general.provider": "Provider",
@@ -25,5 +23,8 @@
   "config.chatjs.general.custom_provider.chat_completion_path": "Chat Completion Path",
   "command.chatjs.msg.failed": "Command execution failed: %1$s",
   "command.chatjs.msg.execution_success": "Execution successful.",
-  "command.chatjs.msg.models": "Models:\n%1$s"
+  "command.chatjs.msg.models": "Models:\n%1$s",
+  "config.chatjs.http_client": "HTTP Client",
+  "config.chatjs.http_client.rps": "Requests per second",
+  "config.chatjs.http_client.request_timeout": "Request timeout"
 }

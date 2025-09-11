@@ -124,3 +124,4 @@ runs/
 mods/
 */logs/*.log
 */logs/*.log.gz
+assets/private-logo.png

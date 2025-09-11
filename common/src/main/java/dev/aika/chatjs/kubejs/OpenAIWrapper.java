@@ -14,6 +14,7 @@ import lombok.SneakyThrows;
 import java.net.URI;
 import java.net.http.HttpResponse;
 import java.util.List;
+import java.util.function.Consumer;
 
 @SuppressWarnings("unused")
 public class OpenAIWrapper {
@@ -26,8 +27,8 @@ public class OpenAIWrapper {
     }
 
     @HideFromJS
-    public static void setProvider(OpenAIProvider provider) {
-        client.setProvider(provider);
+    public static void setClient(Consumer<OpenAIClient> consumer) {
+        consumer.accept(client);
     }
 
     public static String currentProvider() {
@@ -54,7 +55,8 @@ public class OpenAIWrapper {
     public static class deepseek {
         private deepseek() {}
 
-        @SneakyThrows public static UserBalanceInfos userBalance() {
+        @SneakyThrows
+        public static UserBalanceInfos userBalance() {
             HttpResponse<String> resp = client.send(client.getRequest()
                     .header("Accept", "application/json")
                     .uri(new URI("https://api.deepseek.com/user/balance")).GET()

@@ -1,5 +1,6 @@
 package dev.aika.chatjs.api;
 
+import com.google.common.util.concurrent.RateLimiter;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
@@ -26,19 +27,20 @@ import java.util.function.Consumer;
 
 @Accessors(chain = true)
 @Setter @Getter
-public class OpenAIClient {
+@SuppressWarnings("UnstableApiUsage")
+public final class OpenAIClient {
     private OpenAIProvider provider = OpenAIProvider.OpenAI;
     private String model = provider.getDefaultModel();
     @Getter(AccessLevel.NONE)
     private String apiKey;
-    private Duration timeout = Duration.ofSeconds(10);
+    private Double timeout = 10000d;
     @Getter(AccessLevel.NONE) @Setter(AccessLevel.NONE)
-    private HttpClient httpClient = HttpClient.newBuilder()
-            .connectTimeout(timeout)
-            .build();
+    private HttpClient httpClient = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(3)).build();
     @Getter(AccessLevel.NONE) @Setter(AccessLevel.NONE)
     private Gson gson = new GsonBuilder().disableHtmlEscaping().create();
     public ChatAPI chat = new ChatAPI();
+    @Getter(AccessLevel.NONE) @Setter(AccessLevel.NONE)
+    private RateLimiter rl = RateLimiter.create(1000);
 
     public OpenAIClient setProvider(OpenAIProvider provider) {
         this.provider = provider;
@@ -46,13 +48,20 @@ public class OpenAIClient {
         return this;
     }
 
+    public OpenAIClient setRPS(Double rps) {
+        rl.setRate(rps);
+        return this;
+    }
+
     public HttpRequest.Builder getRequest() {
         return HttpRequest.newBuilder()
-                .timeout(timeout)
+                .timeout(Duration.ofMillis((long) (timeout * 1000)))
                 .header("Authorization", "Bearer " + apiKey);
     }
 
-    @SneakyThrows public HttpResponse<String> send(HttpRequest req) {
+    @SneakyThrows
+    public HttpResponse<String> send(HttpRequest req) {
+        rl.acquire();
         return httpClient.send(req, HttpResponse.BodyHandlers.ofString());
     }
 
@@ -74,7 +83,8 @@ public class OpenAIClient {
         }
     }
 
-    @SneakyThrows public List<ModelObject> models() {
+    @SneakyThrows
+    public List<ModelObject> models() {
         URI uri = new URI(provider.getBaseURL() + provider.getModelsPath());
         HttpResponse<String> response = httpClient.send(
                 getRequest().uri(uri).GET().build(),
@@ -88,17 +98,20 @@ public class OpenAIClient {
     public class ChatAPI {
         private ChatAPI() {}
 
-        @SneakyThrows public JsonElement createCompletion(Object body) {
+        @SneakyThrows
+        public JsonElement createCompletion(Object body) {
             JsonObject obj = (JsonObject) gson.toJsonTree(body);
             return createCompletion(obj);
         }
 
-        @SneakyThrows public JsonElement createCompletion(String body) {
+        @SneakyThrows
+        public JsonElement createCompletion(String body) {
             JsonObject obj = (JsonObject) JsonIO.parseRaw(body);
             return createCompletion(obj);
         }
 
-        @SneakyThrows public JsonElement createCompletion(JsonObject body) {
+        @SneakyThrows
+        public JsonElement createCompletion(JsonObject body) {
             if (body.has("model")) body.remove("model");
             body.addProperty("model", model);
             if (body.has("stream")) body.remove("stream");

@@ -2,6 +2,7 @@ package dev.aika.chatjs.command;
 
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.DoubleArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import dev.aika.chatjs.ChatJS;
@@ -9,6 +10,7 @@ import dev.aika.chatjs.ChatJSUtil;
 import dev.aika.chatjs.api.OpenAIClient;
 import dev.aika.chatjs.api.resources.ModelObject;
 import dev.aika.chatjs.kubejs.OpenAIWrapper;
+import dev.aika.chatjs.server.ChatJSEventHandler;
 import dev.aika.chatjs.server.SecretManager;
 import net.minecraft.commands.CommandRuntimeException;
 import net.minecraft.commands.CommandSourceStack;
@@ -45,7 +47,7 @@ public class ChatJSCommands {
         try {
             SecretManager.INSTANCE.load();
             ChatJS.CONFIG.load();
-            OpenAIWrapper.setProvider(ChatJSUtil.getProvider());
+            ChatJSEventHandler.clientInit();
         } catch (IOException e) {
             log.error(marker, "Failed to load secret file", e);
             throw new CommandRuntimeException(Component.translatable("command.chatjs.msg.failed", e.getMessage()));
@@ -63,7 +65,10 @@ public class ChatJSCommands {
     }
 
     private static int models(CommandContext<CommandSourceStack> ctx) {
-        OpenAIClient client = new OpenAIClient().setProvider(ChatJSUtil.getProvider()).setApiKey(ChatJSUtil.getApiKey());
+        OpenAIClient client = new OpenAIClient()
+                .setProvider(ChatJSUtil.getProvider())
+                .setApiKey(ChatJSUtil.getApiKey())
+                .setTimeout(10d);
 
         List<ModelObject> result;
         try {
@@ -74,7 +79,9 @@ public class ChatJSCommands {
 
         StringBuilder sb = new StringBuilder();
         for (ModelObject m : result) {
-            sb.append("   > ").append(m.id).append("\n");
+            if (ChatJSUtil.getProvider().getDefaultModel().equals(m.id)) sb.append("   > ");
+            else sb.append("   | ");
+            sb.append(m.id).append("\n");
         }
         ctx.getSource().sendSystemMessage(Component.translatable("command.chatjs.msg.models", sb.substring(0, sb.toString().length() - 1)));
         return Command.SINGLE_SUCCESS;

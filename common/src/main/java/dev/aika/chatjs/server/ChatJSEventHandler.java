@@ -37,8 +37,7 @@ public class ChatJSEventHandler {
         File secretFile = new File(server.getWorldPath(LevelResource.ROOT).toFile(), ChatJS.MOD_ID + ".secret.properties");
         try {
             SecretManager.INSTANCE.load(secretFile);
-            OpenAIWrapper.setApiKey(ChatJSUtil.getApiKey());
-            OpenAIWrapper.setProvider(ChatJSUtil.getProvider());
+            clientInit();
         } catch (IOException e) {
             log.error(marker, "Failed to load secret file", e);
         }
@@ -51,5 +50,14 @@ public class ChatJSEventHandler {
         } catch (IOException e) {
             log.error(marker, "Failed to save secret file", e);
         }
+    }
+
+    public static void clientInit() {
+        OpenAIWrapper.setClient(client -> {
+            client.setProvider(ChatJSUtil.getProvider())
+                    .setApiKey(ChatJSUtil.getApiKey())
+                    .setRPS(((Number) ChatJS.CONFIG.get("http_client.rps")).doubleValue())
+                    .setTimeout(((Number) ChatJS.CONFIG.get("http_client.request_timeout")).doubleValue());
+        });
     }
 }
