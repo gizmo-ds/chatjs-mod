@@ -17,7 +17,7 @@ public class ChatJSConfig {
     private static final Logger log = ChatJS.LOGGER;
     private static final Marker marker = MarkerFactory.getMarker("ChatJSConfig");
 
-    private final File configFile = new File(Platform.getConfigFolder().toFile(), ChatJS.MOD_ID + ".common.toml");
+    private final File configFile = new File(Platform.getConfigFolder().toFile(), ChatJS.MOD_ID + ".server.toml");
     private final TomlParser parser = new TomlParser();
     private final TomlWriter writer = new TomlWriter();
     private final CommentedConfig defaultConfig;
