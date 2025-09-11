@@ -6,13 +6,6 @@ plugins {
 
 apply(plugin = "com.hypherionmc.modutils.modpublisher")
 
-loom {
-    forge {
-        mixinConfig("chatjs-common.mixins.json")
-        mixinConfig("chatjs.mixins.json")
-    }
-}
-
 architectury { forge() }
 
 val shadowBundle: Configuration by configurations.getting
