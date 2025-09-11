@@ -2,7 +2,6 @@
 
 import com.hypherionmc.modpublisher.plugin.ModPublisherGradleExtension
 import net.fabricmc.loom.api.LoomGradleExtensionAPI
-import org.gradle.kotlin.dsl.libs
 
 plugins {
     java
@@ -140,12 +139,12 @@ configure(pub.enabled_platforms.map { project(":$it") }) {
         gameVersions.addAll(mod.game_version_supports)
 
         modrinthDepends {
+            required("kubejs")
             optional("cloth-config")
-            if (project.name == "fabric") required("fabric-api")
         }
         curseDepends {
+            required("kubejs")
             optional("cloth-config")
-            if (project.name == "fabric") required("fabric-api")
         }
     }
 }
