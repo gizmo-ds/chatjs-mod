@@ -1,0 +1,43 @@
+modLoader = "javafml"
+loaderVersion = "[4,)"
+issueTrackerURL = "https://github.com/gizmo-ds/chatjs-mod/issues"
+license = "LGPL-3.0"
+
+[[mods]]
+modId = "chatjs"
+version = "${version}"
+displayName = "ChatJS"
+displayURL = "https://github.com/gizmo-ds/chatjs-mod"
+authors = "Gizmo"
+description = '''
+Access large language models from KubeJS using an OpenAI-compatible API.
+'''
+logoFile = "chatjs_logo.png"
+
+[[dependencies.chatjs]]
+modId = "neoforge"
+type = "required"
+versionRange = "[21,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.chatjs]]
+modId = "minecraft"
+type = "required"
+versionRange = "[1.21.1,1.22)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.chatjs]]
+modId = "kubejs"
+type = "required"
+versionRange = "[2101.7.2,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.chatjs]]
+modId = "cloth_config"
+type = "optional"
+versionRange = "[15.0.130,)"
+ordering = "NONE"
+side = "CLIENT"

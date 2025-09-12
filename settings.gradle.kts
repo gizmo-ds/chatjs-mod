@@ -1,13 +1,18 @@
 pluginManagement {
     repositories {
-        maven("https://maven.fabricmc.net/")
-        maven("https://maven.architectury.dev/")
-        maven("https://files.minecraftforge.net/maven/")
-        maven("https://maven.firstdark.dev/releases")
         gradlePluginPortal()
+        maven("https://maven.neoforged.net/releases")
+        maven("https://maven.firstdark.dev/releases") {
+            content {
+                includeGroup("com.hypherionmc.modutils")
+                includeGroup("com.hypherionmc.modutils.modpublisher")
+            }
+        }
     }
 }
 
-rootProject.name = "chatjs"
+plugins {
+    id("org.gradle.toolchains.foojay-resolver-convention") version "0.8.0"
+}
 
-include("common", "fabric", "forge")
+rootProject.name = "chatjs"

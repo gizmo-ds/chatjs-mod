@@ -13,12 +13,9 @@ value class ModData(private val project: Project) {
     val id: String get() = prop("mod.id")
     val name: String get() = prop("mod.name")
     val version: String get() = prop("mod.version")
-    val is_snapshot: Boolean get() = prop("mod.is_snapshot").toBoolean()
     val group: String get() = prop("mod.group")
     val release_type: String get() = prop("mod.release_type")
-    val minecraft_version: String get() = prop("minecraft_version")
     val game_version_supports: List<String> get() = prop("mod.game_version_supports").split(",")
-    val enabled_platforms: List<String> get() = prop("mod.enabled_platforms").split(",")
 }
 
 @JvmInline
@@ -29,5 +26,4 @@ value class PubData(private val project: Project) {
     val modrinth_id: String get() = prop("pub.modrinth_id")
     val curseforge_id: String get() = prop("pub.curseforge_id")
     val debug: Boolean get() = prop("pub.debug").toBoolean()
-    val enabled_platforms: List<String> get() = prop("pub.enabled_platforms").split(",")
 }

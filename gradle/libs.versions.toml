@@ -1,47 +1,18 @@
 [plugins]
 dotenv = { id = "co.uzzu.dotenv.gradle", version = "4.0.0" }
-architectury = { id = "architectury-plugin", version = "3.4-SNAPSHOT" }
-loom = { id = "dev.architectury.loom", version = "1.10-SNAPSHOT" }
-shadow = { id = "com.github.johnrengelman.shadow", version = "8.1.1" }
 modpublisher = { id = "com.hypherionmc.modutils.modpublisher", version = "2.1.6" }
+moddev = { id = "net.neoforged.moddev", version = "2.0.107" }
 
 [versions]
 lombok = "1.18.38"
-junit-bom = "5.11.0"
-# Dependencies
-parchment = "2023.09.03"
-fabric-loader = "0.16.14"
-forge = "1.20.1-47.2.32"
-fabric-api = "0.92.6+1.20.1"
-architectury = "9.2.14"
-kubejs = "2001.6.5-build.14"
-nightconfig = "3.6.4"
-clothconfig = "11.1.136"
-# Dev
-modmenu = "7.2.2"
-mixinextras = "0.4.1"
+minecraft = "1.21.1"
+parchment = "2024.11.17"
+neoforge = "21.1.206"
+kubejs = "2101.7.2-build.261"
+clothconfig = "15.0.130"
 
 [libraries]
 lombok = { module = "org.projectlombok:lombok", version.ref = "lombok" }
-junit-bom = { module = "org.junit:junit-bom", version.ref = "junit-bom" }
-junit-jupiter = { module = "org.junit.jupiter:junit-jupiter" }
-# Dependencies
-fabric-loader = { module = "net.fabricmc:fabric-loader", version.ref = "fabric-loader" }
-forge-forge = { module = "net.minecraftforge:forge", version.ref = "forge" }
-fabric-api = { module = "net.fabricmc.fabric-api:fabric-api", version.ref = "fabric-api" }
-architectury-api = { module = "dev.architectury:architectury", version.ref = "architectury" }
-architectury-fabric = { module = "dev.architectury:architectury-fabric", version.ref = "architectury" }
-architectury-forge = { module = "dev.architectury:architectury-forge", version.ref = "architectury" }
-kubejs-api = { module = "dev.latvian.mods:kubejs", version.ref = "kubejs" }
-kubejs-fabric = { module = "dev.latvian.mods:kubejs-fabric", version.ref = "kubejs" }
-kubejs-forge = { module = "dev.latvian.mods:kubejs-forge", version.ref = "kubejs" }
-nightconfig = { module = "com.electronwill.night-config:toml", version.ref = "nightconfig" }
-clothconfig-api = { module = "me.shedaniel.cloth:cloth-config", version.ref = "clothconfig" }
-clothconfig-fabric = { module = "me.shedaniel.cloth:cloth-config-fabric", version.ref = "clothconfig" }
-clothconfig-forge = { module = "me.shedaniel.cloth:cloth-config-forge", version.ref = "clothconfig" }
-# Dev
-modmenu = { module = "com.terraformersmc:modmenu", version.ref = "modmenu" }
-mixinextras-fabric = { module = "io.github.llamalad7:mixinextras-fabric", version.ref = "mixinextras" }
-mixinextras-forge = { module = "io.github.llamalad7:mixinextras-forge", version.ref = "mixinextras" }
-norealmsbutton-fabric = { version = "w3xHbrfC", module = "maven.modrinth:no-realms-button" } # 2.0.1
-norealmsbutton-forge = { version = "Piw7UHNK", module = "maven.modrinth:no-realms-button" } # 2.0.1
+kubejs = { module = "dev.latvian.mods:kubejs-neoforge", version.ref = "kubejs" }
+clothconfig = { module = "me.shedaniel.cloth:cloth-config-neoforge", version.ref = "clothconfig" }
+norealmsbutton = { version = "ZPsxuqtp", module = "maven.modrinth:no-realms-button" } # 2.0.2

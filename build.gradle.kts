@@ -1,127 +1,92 @@
 @file:Suppress("UnstableApiUsage", "SpellCheckingInspection")
 
-import com.hypherionmc.modpublisher.plugin.ModPublisherGradleExtension
-import net.fabricmc.loom.api.LoomGradleExtensionAPI
-
 plugins {
-    java
-    alias(libs.plugins.architectury)
-    alias(libs.plugins.loom) apply false
-    alias(libs.plugins.shadow) apply false
-    alias(libs.plugins.modpublisher) apply false
+    idea
+    `java-library`
+    alias(libs.plugins.moddev)
+    alias(libs.plugins.modpublisher)
     alias(libs.plugins.dotenv)
 }
 
-val mcVersion = mod.minecraft_version
+val mcVersion = libs.versions.minecraft.get()
 val curseforgeToken: String = env.fetch("CF_TOKEN", "").trim()
 val modrinthToken: String = env.fetch("MODRINTH_TOKEN", "").trim()
 val modChangelog = rootProject.file("CHANGELOG.md").readText().split("###")[1].let { x -> "###$x".trim() }
 
-architectury { minecraft = mcVersion }
+group = mod.group
+version = "${mod.version}-$mcVersion"
 
-allprojects {
-    group = mod.group
-    version = "${mod.version}-$mcVersion"
-}
+base.archivesName.set("${mod.id}-neoforge")
+java.toolchain.languageVersion.set(JavaLanguageVersion.of(21))
 
-subprojects {
-    apply(plugin = "architectury-plugin")
-    apply(plugin = "dev.architectury.loom")
+neoForge {
+    version = libs.versions.neoforge.get()
 
-    base.archivesName.set("${mod.id}-${project.name}")
+    parchment {
+        minecraftVersion = mcVersion
+        mappingsVersion = libs.versions.parchment.get()
+    }
 
-    val libs = rootProject.libs
-    var mappingsDependency: Dependency? = null
-    configure<LoomGradleExtensionAPI> {
-        silentMojangMappingsLicense()
+    runs {
+        register("client") {
+            client()
+            systemProperty("neoforge.enabledGameTestNamespaces", mod.id)
+        }
+        register("server") {
+            server()
+            programArgument("--nogui")
+            systemProperty("neoforge.enabledGameTestNamespaces", mod.id)
+        }
 
-        mappingsDependency = layered {
-            officialMojangMappings()
-            parchment("org.parchmentmc.data:parchment-$mcVersion:${libs.versions.parchment.get()}@zip")
+        configureEach {
+            systemProperty("forge.logging.markers", "REGISTRIES")
+            logLevel = org.slf4j.event.Level.WARN
         }
     }
 
-    base.archivesName.set("${mod.id}-${project.name}")
-
-    repositories {
-        maven("https://maven.parchmentmc.org") { name = "ParchmentMC" }
-        maven("https://cursemaven.com") { content { includeGroup("curse.maven") } }
-        maven("https://api.modrinth.com/maven") { content { includeGroup("maven.modrinth") } }
-        maven("https://jitpack.io") { name = "JitPack" }
-        maven("https://maven.latvian.dev/releases") {
-            // KubeJS and Rhino
-            name = "latvian.dev Maven"
-            content {
-                includeGroup("dev.latvian.mods")
-                includeGroup("dev.latvian.apps")
-            }
+    mods {
+        register(mod.id) {
+            sourceSet(sourceSets.main.get())
         }
-    }
-
-    dependencies {
-        "minecraft"("net.minecraft:minecraft:$mcVersion")
-        mappingsDependency?.let { "mappings"(it) }
-
-        compileOnly(libs.lombok)
-        annotationProcessor(libs.lombok)
-    }
-
-    java {
-        withSourcesJar()
-
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
-
-    tasks.withType<JavaCompile> {
-        options.encoding = "UTF-8"
-        options.release.set(17)
-    }
-    tasks.named("clean") {
-        doLast { delete("logs") }
     }
 }
 
-configure(pub.enabled_platforms.map { project(":$it") }) {
-    apply(plugin = "architectury-plugin")
-    apply(plugin = "dev.architectury.loom")
-    apply(plugin = "com.hypherionmc.modutils.modpublisher")
-
-    val platformName = project.extensions.getByName<LoomGradleExtensionAPI>("loom")
-        .platform.map { it.displayName() }.get()
-
-    configure<dev.architectury.plugin.ArchitectPluginExtension> {
-        platformSetupLoomIde()
-    }
-
-    val common: Configuration by configurations.creating
-    val shadowBundle: Configuration by configurations.creating
-    configurations {
-        compileOnly.configure { extendsFrom(common) }
-        runtimeOnly.configure { extendsFrom(common) }
-
-        shadowBundle.isCanBeResolved = true
-        shadowBundle.isCanBeConsumed = false
-    }
-
-    dependencies {
-        common(project(path = ":common", configuration = "namedElements")) { isTransitive = false }
-        shadowBundle(project(path = ":common", configuration = "transformProduction$platformName"))
-    }
-
-    tasks {
-        processResources {
-            duplicatesStrategy = DuplicatesStrategy.INCLUDE
-
-            from(rootProject.file("LICENSE")) { rename { "LICENSE.txt" } }
-            from(rootProject.file("third-party-licenses")) { into("third-party-licenses") }
-            from(project.file("third-party-licenses")) { into("third-party-licenses") }
-            from(rootProject.file("assets/logo.png")) { rename { "${mod.id}_logo.png" } }
-            from(rootProject.file("assets/private-logo.png")) { rename { "${mod.id}_logo.png" } }
+repositories {
+    maven("https://jitpack.io") { name = "JitPack" }
+    maven("https://api.modrinth.com/maven") { content { includeGroup("maven.modrinth") } }
+    maven("https://maven.shedaniel.me/") // Cloth Config
+    maven("https://maven.latvian.dev/releases") {
+        // KubeJS and Rhino
+        name = "latvian.dev Maven"
+        content {
+            includeGroup("dev.latvian.mods")
+            includeGroup("dev.latvian.apps")
         }
     }
+}
 
-    configure<ModPublisherGradleExtension> {
+dependencies {
+    implementation(libs.norealmsbutton)
+    compileOnly(libs.lombok)
+    annotationProcessor(libs.lombok)
+
+    implementation(libs.kubejs)
+    implementation(libs.clothconfig)
+}
+
+tasks {
+    processResources {
+        inputs.property("version", version)
+        duplicatesStrategy = DuplicatesStrategy.INCLUDE
+        filteringCharset = "UTF-8"
+
+        from(file("LICENSE")) { rename { "LICENSE.txt" } }
+        filesMatching("META-INF/neoforge.mods.toml") { expand("version" to version) }
+        from(file("third-party-licenses")) { into("third-party-licenses") }
+        from(file("assets/logo.png")) { rename { "${mod.id}_logo.png" } }
+        from(file("assets/private-logo.png")) { rename { "${mod.id}_logo.png" } }
+    }
+    publisher {
         apiKeys {
             modrinth(modrinthToken)
             curseforge(curseforgeToken)
@@ -131,11 +96,13 @@ configure(pub.enabled_platforms.map { project(":$it") }) {
 
         debug.set(pub.debug)
 
+        artifact.set(jar)
+
         versionType.set(mod.release_type)
         changelog.set(modChangelog)
-        displayName.set("${mod.name} ${mod.version} for $platformName $mcVersion")
-        projectVersion.set("${project.version}-${project.name}")
-        loaders.add(project.name)
+        displayName.set("${mod.name} ${mod.version} for NeoForge $mcVersion")
+        projectVersion.set("${project.version}-neoforge")
+        loaders.add("neoforge")
         gameVersions.addAll(mod.game_version_supports)
 
         modrinthDepends {
@@ -146,5 +113,12 @@ configure(pub.enabled_platforms.map { project(":$it") }) {
             required("kubejs")
             optional("cloth-config")
         }
+    }
+}
+
+idea {
+    module {
+        isDownloadSources = true
+        isDownloadJavadoc = true
     }
 }
