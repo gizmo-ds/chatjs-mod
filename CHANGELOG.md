@@ -1,9 +1,5 @@
 ### 1.0.0
 
-**Forge**
-
-- first release
-
-**Fabric**
+**NeoForge**
 
 - first release
