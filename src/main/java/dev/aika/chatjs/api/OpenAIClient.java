@@ -28,9 +28,9 @@ import java.util.List;
 import java.util.concurrent.Flow;
 import java.util.function.Consumer;
 
+@SuppressWarnings("UnstableApiUsage")
 @Accessors(chain = true)
-@Setter
-@Getter
+@Setter @Getter
 public final class OpenAIClient {
     private OpenAIProvider provider = OpenAIProvider.OpenAI;
     private String model = provider.getDefaultModel();

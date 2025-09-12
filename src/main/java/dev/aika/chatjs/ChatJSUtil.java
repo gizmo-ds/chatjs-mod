@@ -2,7 +2,6 @@ package dev.aika.chatjs;
 
 import dev.aika.chatjs.api.OpenAIProvider;
 import dev.aika.chatjs.server.SecretManager;
-import lombok.experimental.UtilityClass;
 
 public final class ChatJSUtil {
     public static OpenAIProvider getProvider() {
