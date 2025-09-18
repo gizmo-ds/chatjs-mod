@@ -31,13 +31,13 @@ side = "BOTH"
 [[dependencies.chatjs]]
 modId = "kubejs"
 type = "required"
-versionRange = "[2101.7.2,)"
+versionRange = "[2101.7.0,)"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.chatjs]]
 modId = "cloth_config"
 type = "optional"
-versionRange = "[15.0.130,)"
+versionRange = "[15.0.0,)"
 ordering = "NONE"
 side = "CLIENT"
