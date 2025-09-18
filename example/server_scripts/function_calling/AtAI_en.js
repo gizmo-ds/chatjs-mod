@@ -2,12 +2,15 @@ const tools = [
   {
     type: "function",
     function: {
-      description: "执行minecraft游戏指令",
+      description: "Execute Minecraft game command",
       name: "exec_command",
       parameters: {
         type: "object",
         properties: {
-          command: { type: "string", description: "需要执行的minecraft指令" },
+          command: {
+            type: "string",
+            description: "The Minecraft command to execute",
+          },
         },
         required: ["command"],
       },
