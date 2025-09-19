@@ -5,6 +5,7 @@
   "gui.chatjs.missing_cloth_config.curseforge_download": "CurseForge",
   "config.chatjs.title": "ChatJS Settings",
   "config.chatjs.general": "General",
+  "config.chatjs.general.apikey_not_set_warning": "API key not set warning",
   "config.chatjs.general.provider": "Provider",
   "config.chatjs.general.provider.@OpenAI": "OpenAI",
   "config.chatjs.general.provider.@Grok": "Grok",
@@ -24,5 +25,6 @@
   "command.chatjs.msg.models": "Models:\n%1$s",
   "config.chatjs.http_client": "HTTP Client",
   "config.chatjs.http_client.rps": "Requests per second",
-  "config.chatjs.http_client.request_timeout": "Request timeout"
+  "config.chatjs.http_client.request_timeout": "Request timeout",
+  "message.chatjs.apikey_not_set_warning": "\n§6§lChatJS API key not set. Some features may not work.§r\n\nUse the §a§l/chatjs set_apikey <your API Key>§r command to set your API key.\n"
 }

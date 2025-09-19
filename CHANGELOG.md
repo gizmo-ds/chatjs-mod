@@ -1,3 +1,7 @@
+### Unreleased
+
+- add apikey not set warning
+
 ### 1.0.1
 
 - fix dependencies version range

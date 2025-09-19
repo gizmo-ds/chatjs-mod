@@ -26,6 +26,16 @@ public final class ClothConfigScreen {
 
         final ConfigCategory general = builder.getOrCreateCategory(Component.translatable("config.chatjs.general"));
 
+        general.addEntry(
+                entryBuilder.startBooleanToggle(
+                                Component.translatable("config.chatjs.general.apikey_not_set_warning"),
+                                ChatJS.CONFIG.get("apikey_not_set_warning")
+                        )
+                        .setDefaultValue(getDefault("apikey_not_set_warning"))
+                        .setSaveConsumer(saveValue("apikey_not_set_warning"))
+                        .build()
+        );
+
         final EnumListEntry<OpenAIProvider> provider = entryBuilder.startEnumSelector(
                         Component.translatable("config.chatjs.general.provider"),
                         OpenAIProvider.class,

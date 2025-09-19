@@ -1,3 +1,5 @@
+apikey_not_set_warning = true
+
 # OpenAI/Grok/DeepSeek/DouBao/Gemini/Kimi/Qwen/Custom
 provider = "OpenAI"
 

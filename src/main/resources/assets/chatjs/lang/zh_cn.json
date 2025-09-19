@@ -5,6 +5,7 @@
   "gui.chatjs.missing_cloth_config.curseforge_download": "CurseForge",
   "config.chatjs.title": "ChatJS 设置",
   "config.chatjs.general": "一般",
+  "config.chatjs.general.apikey_not_set_warning": "API 密钥未设置警告",
   "config.chatjs.general.provider": "提供者",
   "config.chatjs.general.provider.@OpenAI": "OpenAI",
   "config.chatjs.general.provider.@Grok": "Grok",
@@ -24,5 +25,6 @@
   "command.chatjs.msg.models": "模型：\n%1$s",
   "config.chatjs.http_client": "HTTP 客户端",
   "config.chatjs.http_client.rps": "每秒请求数",
-  "config.chatjs.http_client.request_timeout": "请求超时"
+  "config.chatjs.http_client.request_timeout": "请求超时",
+  "message.chatjs.apikey_not_set_warning": "\n§6§lChatJS 的 API 密钥未设置，某些功能可能无法正常使用。§r\n\n使用 §a§l/chatjs set_apikey <你的密钥>§r 命令设置你的 API 密钥。\n"
 }
