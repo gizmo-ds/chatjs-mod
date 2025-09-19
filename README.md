@@ -16,11 +16,15 @@ If everything is set up correctly, executing `/chatjs models` can list all avail
 
 ### Death message
 
+![death message example](https://cdn.modrinth.com/data/eYYNtb4M/images/a8e3b50afd669171f908349d0e17a430236e796f.gif)
+
 Send a message after the player dies.
 
 [example/server_scripts/death_message](example/server_scripts/death_message)
 
 ### Function Calling
+
+![function calling example](https://cdn.modrinth.com/data/eYYNtb4M/images/7e1d0691791bc77db2e184019059cb6185e197c9.gif)
 
 Enter `@ai <What you want to say to AI>` in Chat, the AI will execute game commands based on what you enter.
 
